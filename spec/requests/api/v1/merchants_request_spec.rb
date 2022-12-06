@@ -9,6 +9,7 @@ describe 'Merchants API' do
     expect(response).to be_successful
 
     response_body = JSON.parse(response.body, symbolize_names: true)
+
     merchants = response_body[:data]
 
     expect(merchants.count).to eq(3)

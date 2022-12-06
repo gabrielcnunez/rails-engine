@@ -25,9 +25,8 @@ describe 'Items API' do
       expect(item).to have_key(:unit_price)
       expect(item[:unit_price]).to be_a(Float)
 
-      # Ask about foreign keys with using FactoryBot
-      # expect(item).to have_key(:merchant_id)
-      # expect(item[:merchant_id]).to be_a(Integer)
+      expect(item).to have_key(:merchant_id)
+      expect(item[:merchant_id]).to be_a(Integer)
     end
   end
 end

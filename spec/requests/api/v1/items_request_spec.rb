@@ -48,16 +48,17 @@ describe 'Items API' do
   end
 
   it 'can create a new item' do
+    id = create(:merchant).id
     item_params = ({
                     name: 'Widget',
                     description: 'High quality widget',
                     unit_price: 109.99,
-                    merchant_id: 14
+                    merchant_id: id
                   })
     headers = {"CONTENT_TYPE" => "application/json"}
 
-    post '/api/v1/books', headers: headers, params: JSON.generate(book: item_params)
-    created_item = Item.last_name
+    post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+    created_item = Item.last
 
     expect(response).to be_successful
     expect(created_item.name).to eq(item_params[:name])

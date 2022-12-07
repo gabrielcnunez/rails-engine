@@ -16,6 +16,10 @@ class Api::V1::ItemsController < ApplicationController
     render json: ItemSerializer.new(Item.update(params[:id], item_params))
   end
 
+  def merchant_items
+    require 'pry'; binding.pry
+  end
+
   private
 
   def item_params

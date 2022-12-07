@@ -26,7 +26,7 @@ describe 'Items API' do
     end
   end
 
-  it "can get one item by its id" do
+  it 'can get one item by its id' do
     id = create(:item).id.to_s
 
     get "/api/v1/items/#{id}"
@@ -45,5 +45,24 @@ describe 'Items API' do
     expect(item[:attributes][:description]).to be_a(String)
     expect(item[:attributes][:unit_price]).to be_a(Float)
     expect(item[:attributes][:merchant_id]).to be_a(Integer)
+  end
+
+  it 'can create a new item' do
+    item_params = ({
+                    name: 'Widget',
+                    description: 'High quality widget',
+                    unit_price: 109.99,
+                    merchant_id: 14
+                  })
+    headers = {"CONTENT_TYPE" => "application/json"}
+
+    post '/api/v1/books', headers: headers, params: JSON.generate(book: item_params)
+    created_item = Item.last_name
+
+    expect(response).to be_successful
+    expect(created_item.name).to eq(item_params[:name])
+    expect(created_item.description).to eq(item_params[:description])
+    expect(created_item.unit_price).to eq(item_params[:unit_price])
+    expect(created_item.merchant_id).to eq(item_params[:merchant_id])
   end
 end

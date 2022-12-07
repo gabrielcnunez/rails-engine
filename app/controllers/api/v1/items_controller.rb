@@ -8,7 +8,8 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def create
-    render json: ItemSerializer.new(Item.create(item_params))
+    new_item = ItemSerializer.new(Item.create(item_params))
+    render json: new_item, status: :created
   end
 
   private

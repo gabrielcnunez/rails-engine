@@ -42,12 +42,13 @@ describe 'Merchants API' do
   end
 
   it "can get all of a merchant's items by its id" do
-    merchant = create(:merchant)
+    merchant1 = create(:merchant)
+    id = merchant1.id
     merchant2 = create(:merchant)
-    create_list(:item, 2, merchant: merchant)
+    create_list(:item, 2, merchant: merchant1)
     create(:item, merchant: merchant2)
 
-    get "/api/v1/merchants/#{merchant}/items"
+    get "/api/v1/merchants/#{id}/items"
 
     expect(response).to be_successful
   end

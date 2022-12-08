@@ -95,6 +95,6 @@ describe 'Items API' do
 
     items_merchant = response_body[:data]
 
-    expect(items_merchant.name).to eq(merchant1.name)
+    expect(items_merchant[:attributes][:name]).to eq(merchant1.name)
   end
 end

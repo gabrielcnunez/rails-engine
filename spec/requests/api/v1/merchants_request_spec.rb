@@ -62,4 +62,20 @@ describe 'Merchants API' do
       expect(item[:attributes][:merchant_id]).to eq(id)
     end
   end
+
+  it 'can find all merchants using case insensitive, partial match query params' do
+    merchant1 = create(:merchant, name: "BoJack Horseman")
+    merchant2 = create(:merchant, name: "Jack Shepard")
+    merchant3 = create(:merchant, name: "Audrey Horne")
+
+    get "/api/v1/merchants/find_all?name=jack"
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+
+    found_merchants = response_body[:data]
+
+    expect(found_merchants.count).to eq(2)
+  end
 end

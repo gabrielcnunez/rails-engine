@@ -97,4 +97,55 @@ describe 'Items API' do
 
     expect(items_merchant[:attributes][:name]).to eq(merchant1.name)
   end
+
+  before :each do
+    item1 = create(:item, name: 'India Pale Beer', unit_price: 12.99)
+    item2 = create(:item, name: 'Christmas Ale', unit_price: 8.99)
+    item3 = create(:item, name: 'Boston Lager', unit_price: 9.99)
+    item4 = create(:item, name: 'Amber Bock', unit_price: 4.99)
+  end
+  it 'can find an item based on name query params' do
+    get '/api/v1/items/find?name=ale'
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+
+    item_by_name = response_body[:data]
+
+    expect(item_by_name[:attributes][:name]).to eq(item2.name)
+  end
+  it 'can find an item based on mininum price query params' do
+    get '/api/v1/items/find?min_price=5'
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+
+    item_by_min_price = response_body[:data]
+
+    expect(item_by_min_price[:attributes][:name]).to eq(item3.name)
+  end
+  it 'can find an item based on maximum price query params' do
+    get '/api/v1/items/find?max_price=9'
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+
+    item_by_max_price = response_body[:data]
+
+    expect(item_by_max_price[:attributes][:name]).to eq(item4.name)
+  end
+  it 'can find an item based on minimum and maximum price query params' do
+    get '/api/v1/items/find?min_price=10&max_price=15'
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+
+    item_by_min_and_max_price = response_body[:data]
+
+    expect(item_by_min_and_max_price[:attributes][:name]).to eq(item1.name)
+  end
 end

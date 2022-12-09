@@ -13,8 +13,14 @@ describe 'methods' do
   end
 
   describe '#name_search' do
-    it 'returns an item using case insensitive partial match query params' do
+    it 'returns an item using case insensitive partial match name param' do
       expect(Item.name_search('ale')).to eq(@item2)
+    end
+  end
+
+  describe '#min_search' do
+    it 'returns an item above a minimum price query param' do
+      expect(Item.min_search(5)).to eq(@item3)
     end
   end
 end

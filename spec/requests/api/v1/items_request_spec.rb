@@ -90,7 +90,7 @@ describe 'Items API' do
 
     expect(response).to have_http_status(204)
     expect(Item.count).to eq(0)
-    expect(Book.find(book.id)).to raise_error(ActiveRecord::RecordNotFound)
+    expect{Item.find(item1.id)}.to raise_error(ActiveRecord::RecordNotFound)
   end
 
   it 'can get the merchant for an item' do

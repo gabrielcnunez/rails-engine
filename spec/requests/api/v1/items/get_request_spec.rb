@@ -119,5 +119,65 @@ describe 'Items API GET request' do
 
       expect(item_by_min_and_max_price[:attributes][:name]).to eq(@item1.name)
     end
+
+    describe "returns 'invalid search' and a 400 status" do
+      it 'when name and min_price query parameters are sent' do
+        get '/api/v1/items/find?min_price=5&name=ale'
+
+        error = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+        expect(error[:data]).to eq('Invalid Search')
+      end
+
+      it 'when name and max_price query parameters are sent' do
+        get '/api/v1/items/find?max_price=10&name=ale'
+
+        error = JSON.parse(response.body, symbolize_names: true)
+  
+        expect(response).to have_http_status(400)
+        expect(error[:data]).to eq('Invalid Search')
+      end
+    end
+
+    describe "returns an empty error hash and a 400 status" do
+      it 'when min_price is a negative number' do
+        get '/api/v1/items/find?min_price=-10'
+
+        error = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+        expect(error[:errors]).to eq({})
+      end
+      
+      it 'when max_price is a negative number' do
+        get '/api/v1/items/find?max_price=-10'
+
+        error = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+        expect(error[:errors]).to eq({})
+      end
+    end
+
+    describe "returns an empty data hash and a 400 status" do
+      it 'when min_price does not have a match' do
+        get '/api/v1/items/find?min_price=500'
+
+        no_results = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+        expect(no_results[:data]).to eq({})
+      end
+      
+      it 'when max_price does not have a match' do
+        get '/api/v1/items/find?max_price=1'
+
+        no_results = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+        expect(no_results[:data]).to eq({})
+      end
+    end
   end
 end

@@ -23,4 +23,10 @@ describe 'methods' do
       expect(Item.min_search(5)).to eq(@item3)
     end
   end
+  
+  describe '#max_search' do
+    it 'returns an item below a maximum price query param' do
+      expect(Item.max_search(9)).to eq(@item4)
+    end
+  end
 end

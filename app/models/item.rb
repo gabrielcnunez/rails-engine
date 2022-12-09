@@ -8,4 +8,8 @@ class Item < ApplicationRecord
   def self.min_search(param)
     where('unit_price > ?', param).order(:name).first
   end
+  
+  def self.max_search(param)
+    where('unit_price < ?', param).order(:name).first
+  end
 end

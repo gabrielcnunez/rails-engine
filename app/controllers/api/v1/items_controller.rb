@@ -16,6 +16,12 @@ class Api::V1::ItemsController < ApplicationController
     render json: ItemSerializer.new(Item.update(params[:id], item_params))
   end
 
+  def destroy
+    Item.find(params[:id]).destroy!
+
+    head :no_content
+  end
+
   def merchant_items
     merchant = Merchant.find(params[:merchant_id])
     render json: ItemSerializer.new(merchant.items)

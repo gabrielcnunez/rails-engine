@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Items API' do
+describe 'Items API GET request' do
   it 'sends a list of items' do
     create_list(:item, 3)
 
@@ -45,52 +45,6 @@ describe 'Items API' do
     expect(item[:attributes][:description]).to be_a(String)
     expect(item[:attributes][:unit_price]).to be_a(Float)
     expect(item[:attributes][:merchant_id]).to be_a(Integer)
-  end
-
-  it 'can create a new item' do
-    id = create(:merchant).id
-    item_params = ({
-                    name: 'Widget',
-                    description: 'High quality widget',
-                    unit_price: 109.99,
-                    merchant_id: id
-                  })
-    headers = {"CONTENT_TYPE" => "application/json"}
-
-    post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
-    created_item = Item.last
-
-    expect(response).to be_successful
-    expect(created_item.name).to eq(item_params[:name])
-    expect(created_item.description).to eq(item_params[:description])
-    expect(created_item.unit_price).to eq(item_params[:unit_price])
-    expect(created_item.merchant_id).to eq(item_params[:merchant_id])
-  end
-
-  it 'can update an item' do
-    id = create(:item).id
-    old_name = Item.last.name
-    item_params = { name: 'Something New'}
-    headers = {"CONTENT_TYPE" => "application/json"}
-
-    patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
-    item = Item.find_by(id: id)
-
-    expect(response).to be_successful
-    expect(item.name).to_not eq(old_name)
-    expect(item.name).to eq('Something New')
-  end
-
-  it 'can destroy an item along with any invoice where it was the only item' do
-    item1 = create(:item)
-    
-    expect(Item.count).to eq(1)
-
-    delete "/api/v1/items/#{item1.id}"
-
-    expect(response).to have_http_status(204)
-    expect(Item.count).to eq(0)
-    expect{Item.find(item1.id)}.to raise_error(ActiveRecord::RecordNotFound)
   end
 
   it 'can get the merchant for an item' do
@@ -164,6 +118,66 @@ describe 'Items API' do
       item_by_min_and_max_price = response_body[:data]
 
       expect(item_by_min_and_max_price[:attributes][:name]).to eq(@item1.name)
+    end
+
+    describe "returns 'invalid search' and a 400 status" do
+      it 'when name and min_price query parameters are sent' do
+        get '/api/v1/items/find?min_price=5&name=ale'
+
+        error = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+        expect(error[:data]).to eq('Invalid Search')
+      end
+
+      it 'when name and max_price query parameters are sent' do
+        get '/api/v1/items/find?max_price=10&name=ale'
+
+        error = JSON.parse(response.body, symbolize_names: true)
+  
+        expect(response).to have_http_status(400)
+        expect(error[:data]).to eq('Invalid Search')
+      end
+    end
+
+    describe "returns an empty error hash and a 400 status" do
+      it 'when min_price is a negative number' do
+        get '/api/v1/items/find?min_price=-10'
+
+        error = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+        expect(error[:errors]).to eq({})
+      end
+      
+      it 'when max_price is a negative number' do
+        get '/api/v1/items/find?max_price=-10'
+
+        error = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+        expect(error[:errors]).to eq({})
+      end
+    end
+
+    describe "returns an empty data hash and a 400 status" do
+      it 'when min_price does not have a match' do
+        get '/api/v1/items/find?min_price=500'
+
+        no_results = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+        expect(no_results[:data]).to eq({})
+      end
+      
+      it 'when max_price does not have a match' do
+        get '/api/v1/items/find?max_price=1'
+
+        no_results = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+        expect(no_results[:data]).to eq({})
+      end
     end
   end
 end
